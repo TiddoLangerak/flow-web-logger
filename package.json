@@ -7,5 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Tiddo Langerak <tiddolangerak@gmail.com> (https://github.com/TiddoLangerak/)",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "escape-html": "^1.0.3",
+    "get-stdin": "^5.0.1"
+  }
 }
