@@ -6,6 +6,7 @@
 	<style>
 		* {
 			font-family: monospace;
+			line-height: 1.3em;
 		}
 		.error .context,
 		.error .message-text,
@@ -15,6 +16,7 @@
 		.source {
 			display : block;
 			cursor: pointer;
+			line-height: 1.5em;
 		}
 		.source:hover {
 			text-decoration: underline;
@@ -23,47 +25,85 @@
 			display: inline-block;
 			width: 100px;
 		}
+		.line-0 .line {
+			display: none;
+		}
 		.error .theError {
 			color: red;
-			font-weight: bold;
+		}
+		.error .theError,
+		.line,
+		.message-text {
+			font-weight :600;
 		}
 
-		.error-group {
+		.file-errors {
 			list-style-type : none;
 		}
 
-		.error-group .error	 {
-			border-bottom: 1px solid #999;
-			margin-top: 9px;
-			padding-bottom: 9px;
+		.file-errors .error	 {
+			margin-top: 5px;
+			padding-bottom: 5px;
 			cursor: pointer;
 		}
-		.error-group .error:last-child {
+		.file-errors .error:last-child {
 			border-bottom: none;
 		}
 
-		.error-group .error:before {
+		.error-group {
+			display: block;
+			border: 1px solid #1111;
+			border-radius: 5px;
+			padding-left: 25px;
+			margin-left: -25px;
+			padding-top: 5px;
+			background-color: white;
+			box-sizing: border-box;
+			margin-bottom: -1px;
+			margin-top: 5px;
+		}
+
+		.error-group:hover {
+			box-shadow: 0px 0px 1px #222;
+		}
+
+		.error-group:hover .error-group:not(:hover) {
+			opacity: 0.6;
+		}
+		.error-group:hover .error-group:not(:hover) .error-group {
+			opacity: 1;
+		}
+
+
+		.error-group.collapsed {
+			background-color: rgb(225,225,225,0.5);
+			font-style: italic;
+			color: #555;
+		}
+
+		.file-errors .error-group:before {
 			content : '▼';
 			margin-left: -20px;
 			display: block;
 			float: left;
 		}
-
-		.error-group .error.collapsed .message {
-			display: none;
-		}
-		.error-group .error.collapsed .message:first-child {
-			display: block;
-		}
-		.error-group .error.collapsed .message:first-child .message-text {
-			display: none;
-		}
-
-		.error-group .error.collapsed:before {
+		.file-errors .error-group.collapsed:before {
 			content : '▶';
 		}
 
-		.source-group.collapsed .error-group {
+		.file-errors .error-group.collapsed>.message,
+		.file-errors .error-group.collapsed>.extra,
+		.file-errors .error-group.collapsed>.child
+		{
+			display: none;
+		}
+		.file-errors .error-group.collapsed>.message:first-child {
+			display: block;
+			height: 1.5em;
+			overflow: hidden;
+		}
+
+		.source-group.collapsed .file-errors {
 			display: none;
 		}
 		.source-group .source:before {
@@ -75,10 +115,17 @@
 			content : '▶';
 		}
 
+		.extra, .child {
+			display: block;
+			margin-left: 15px;
+		}
+
+
 	</style>
 	<script>
-		function collapse(node) {
+		function collapse(node, event) {
 			node.classList.toggle("collapsed");
+			event.stopPropagation();
 		}
 	</script>
 </head>

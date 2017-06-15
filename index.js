@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const getStdin = require('get-stdin');
 const fs = require('fs');
 const path = require('path');
@@ -15,15 +17,23 @@ function render(content) {
 
 
 function extractMessages(error) {
+	let messages = [...error.message];
 	let extras = [];
+	let children = [];
 	if (error.extra) {
-		console.error("Has extra");
-		extras = error.extra.map(extra => extra.message).reduce((acc, extra) => [...acc, ...extra], []);
-		console.error(extras);
+		extras = error.extra.map(extra => extractMessages(extra));
 	}
-	return [...error.message, ...extras];
+	if (error.children) {
+		children = error.children.map(child => extractMessages(child))
+	}
+	return {
+		message : flattenMessages(messages),
+		extras,
+		children
+	}
 }
-function flattenMessages(acc, messages) {
+
+function flattenMessages(messages) {
 	let bundle = [];
 	messages.forEach(message => {
 		if (message.type === 'Comment') {
@@ -34,7 +44,7 @@ function flattenMessages(acc, messages) {
 			bundle.push(message);
 		}
 	});
-	return [...acc, bundle];
+	return bundle;
 }
 
 function strToHtml(str) {
@@ -53,43 +63,60 @@ function strLen(str) {
 function groupToHtml({ source, bundles }) {
 	const errors = bundles
 		.map(bundleToHtml)
-		.map(bundle => `<li class="error" onclick="collapse(this)">${bundle}</li>`)
+		.map(bundle => `<li class="error">${bundle}</li>`)
 		.join('\n');
 	return `<div class="source-group">
-		<a class="source" onclick="collapse(this.parentNode)">
+		<a class="source" onclick="collapse(this.parentNode, event)">
 			${source}
 			<span class="count">(${bundles.length} errors)</span>
 		</a>
-		<ul class="error-group">
+		<ul class="file-errors">
 			${errors}
 		</ul>
 	</div>`;
 }
 
 function bundleToHtml(bundle) {
-	return bundle.map(messageToHtml).join('\n');;
+	let collect = '<span onclick="collapse(this, event)" class="error-group">\n';
+	for (let message of bundle.message) {
+		collect += messageToHtml(message) + '\n';
+	}
+	for (let extra of bundle.extras) {
+		collect += '<span class="extra">\n';
+		collect += bundleToHtml(extra);
+		collect += '</span>\n';
+	}
+	for (let child of bundle.children) {
+		collect += '<span class="child">\n';
+		collect += bundleToHtml(child);
+		collect += '</span>\n';
+	}
+	collect += '</span>\n'
+	return collect;
+	//return bundle.map(messageToHtml).join('\n');;
 }
 
 function messageToHtml(message) {
-	const prefix = message.context.substring(0, message.loc.start.column - 1);
-	const error = message.context.substring(message.loc.start.column - 1, message.loc.end.column);
-	const postfix = message.context.substr(message.loc.end.column);
+	const messageContext = message.context || '';
+	const prefix = messageContext.substring(0, message.start - 1);
+	const error = messageContext.substring(message.start - 1, message.end);
+	const postfix = messageContext.substr(message.end);
 
 	const messageSpacing = Array.from({ length : strLen(prefix) + 1 }).join(' ');
 	const messageArrows = Array.from({ length : strLen(error) + 1 }).join('^');
 	const fullMessage = `${strToHtml(messageSpacing)}${messageArrows} ${strToHtml(message.descr)}`;
 
-	const line = message.loc.start.line;
+	const line = message.line;
 
 	const context = `${strToHtml(prefix)}<span class='theError'>${strToHtml(error)}</span>${strToHtml(postfix)}`;
-	return `<span class="message">
+	return `<span class="message line-${line}">
 			<span class="context"><span class="line">${line}:</span>${context}</span>
 			<span class="message-text"><span class="line"></span>${fullMessage}</span>
 		</span>`;
 }
 
 function groupByFile(acc, bundle) {
-	const source = bundle[0].loc.source;
+	const source = bundle.message[0].path;
 	acc[source] = acc[source] || [];
 	acc[source].push(bundle);
 	return acc;
@@ -106,7 +133,7 @@ async function run() {
 	const grouped = json
 		.errors
 		.map(extractMessages)
-		.reduce(flattenMessages, [])
+		//.reduce(flattenMessages, [])
 		.reduce(groupByFile, {});
 	const content = Object.entries(grouped)
 		.map(([source, bundles]) => ({ source, bundles }))

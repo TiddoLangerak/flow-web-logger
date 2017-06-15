@@ -1,15 +1,23 @@
 {
-  "name": "flow-web-logger",
+  "name": "@magnet.me/flow-web-logger",
   "version": "0.0.1",
-  "description": "",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "bin": {
+    "flow-web-logger": "index.js"
   },
   "author": "Tiddo Langerak <tiddolangerak@gmail.com> (https://github.com/TiddoLangerak/)",
   "license": "MIT",
   "dependencies": {
     "escape-html": "^1.0.3",
     "get-stdin": "^5.0.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TiddoLangerak/flow-web-logger.git"
+  },
+  "bugs": {
+    "url": "https://github.com/TiddoLangerak/flow-web-logger/issues"
+  },
+  "homepage": "https://github.com/TiddoLangerak/flow-web-logger#readme",
+  "description": ""
 }
