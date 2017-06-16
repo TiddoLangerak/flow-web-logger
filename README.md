@@ -5,3 +5,8 @@ on larger projects minor errors can often result in hundreds of lines of errors,
 it difficult to filter this down to the root cause. The HTML render of these errors allows
 for collapsing parts of the error trees, which makes it much easier to navigate them. 
 
+## Usage:
+
+```
+flow --json | flow-web-logger > error-page.html
+```
