@@ -6,18 +6,19 @@
     "flow-web-logger": "index.js"
   },
   "author": "Tiddo Langerak <tiddolangerak@gmail.com> (https://github.com/TiddoLangerak/)",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "dependencies": {
     "escape-html": "^1.0.3",
     "get-stdin": "^5.0.1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TiddoLangerak/flow-web-logger.git"
+    "url": "git+https://github.com/Magnetme/flow-web-logger.git"
   },
   "bugs": {
-    "url": "https://github.com/TiddoLangerak/flow-web-logger/issues"
+    "url": "https://github.com/Magnetme/flow-web-logger/issues"
   },
-  "homepage": "https://github.com/TiddoLangerak/flow-web-logger#readme",
-  "description": ""
+  "homepage": "https://github.com/Magnetme/flow-web-logger#readme",
+  "description": "Utility to render the output of flow into an interactive webpage.",
+  "devDependencies": {}
 }
