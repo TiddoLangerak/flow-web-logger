@@ -98,6 +98,9 @@ function bundleToHtml(bundle) {
 
 function messageToHtml(message) {
 	const messageContext = message.context || '';
+	if (message.line !== message.endLine) {
+		message.end = messageContext.length;
+	}
 	const prefix = messageContext.substring(0, message.start - 1);
 	const error = messageContext.substring(message.start - 1, message.end);
 	const postfix = messageContext.substr(message.end);
@@ -107,10 +110,11 @@ function messageToHtml(message) {
 	const fullMessage = `${strToHtml(messageSpacing)}${messageArrows} ${strToHtml(message.descr)}`;
 
 	const line = message.line;
+	const endLine = message.line !== message.endline ? `...${message.endline}` : ``;
 
 	const context = `${strToHtml(prefix)}<span class='theError'>${strToHtml(error)}</span>${strToHtml(postfix)}`;
 	return `<span class="message line-${line}">
-			<span class="context"><span class="line">${line}:</span>${context}</span>
+			<span class="context"><span class="line">${line}${endLine}:</span>${context}</span>
 			<span class="message-text"><span class="line"></span>${fullMessage}</span>
 		</span>`;
 }
