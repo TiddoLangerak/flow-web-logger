@@ -1,7 +1,7 @@
 {
   "name": "@magnet.me/flow-web-logger",
   "description": "Utility to render the output of flow into an interactive webpage.",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "main": "index.js",
   "bin": {
     "flow-web-logger": "index.js"
