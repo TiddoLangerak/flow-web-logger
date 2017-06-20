@@ -114,9 +114,11 @@ function messageToHtml(message, includeSource = false) {
 		start : { column : 0 },
 		end : { column : 0 }
 	};
-	const prefix = messageContext.substring(0, loc.start.column - 1);
-	const error = messageContext.substring(loc.start.column - 1, loc.end.column);
-	const postfix = messageContext.substring(loc.end.column);
+	const start = loc.start.column;
+	const end = loc.start.line === loc.end.line ? loc.end.column : messageContext.length;
+	const prefix = messageContext.substring(0, start - 1);
+	const error = messageContext.substring(start - 1, end);
+	const postfix = messageContext.substring(end);
 
 	const messageSpacing = Array.from({ length : strLen(prefix) + 1 }).join(' ');
 	const messageArrows = Array.from({ length : strLen(error) + 1 }).join('^');
