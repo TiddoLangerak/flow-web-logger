@@ -8,5 +8,8 @@ for collapsing parts of the error trees, which makes it much easier to navigate 
 ## Usage:
 
 ```
-flow --json | flow-web-logger > error-page.html
+flow --json | flow-web-logger [--root <root>] > error-page.html
 ```
+
+If the optional parameter `--root` is set then all paths will be printed relative to the root directory.
+

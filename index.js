@@ -11,6 +11,11 @@ const tabSize = 2;
 
 const htmlTab = Array.from({ length : tabSize + 1 }).join('&nbsp;');
 
+let sourceRoot = '/';
+if (process.argv[2] && process.argv[2] === '--root') {
+	sourceRoot = path.resolve(process.cwd(), process.argv[3]);;
+}
+
 function render(content) {
 	return template.replace('%content%', content);
 }
@@ -70,7 +75,7 @@ function groupToHtml({ source, bundles }) {
 		.join('\n');
 	return `<div class="source-group">
 		<a class="source" onclick="collapse(this.parentNode, event)">
-			${source}
+			${path.relative(sourceRoot, source)}
 			<span class="count">(${bundles.length} errors)</span>
 		</a>
 		<ul class="file-errors">
@@ -117,7 +122,7 @@ function messageToHtml(message, includeSource = false) {
 	const endLine = message.line !== message.endline ? `...${message.endline}` : ``;
 
 	const context = `${strToHtml(prefix)}<span class='theError'>${strToHtml(error)}</span>${strToHtml(postfix)}`;
-	const source = includeSource ? `<span class="alternative-source">&lt;-- ${message.path}</span>` : '';
+	const source = includeSource ? `<span class="alternative-source">&lt;-- ${path.relative(sourceRoot, message.path)}</span>` : '';
 	const lineTitle = includeSource ? ` title="${message.path}"` : '';
 	return `<span class="message line-${line}">
 			${source}
