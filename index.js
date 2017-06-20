@@ -18,6 +18,9 @@ function render(content) {
 
 function extractMessages(error) {
 	let messages = [...error.message];
+	if (error.operation) {
+		messages.unshift(error.operation);
+	}
 	let extras = [];
 	let children = [];
 	if (error.extra) {
@@ -77,9 +80,10 @@ function groupToHtml({ source, bundles }) {
 }
 
 function bundleToHtml(bundle) {
+	const mainSource = bundle.message[0].path;
 	let collect = '<span onclick="collapse(this, event)" class="error-group">\n';
 	for (let message of bundle.message) {
-		collect += messageToHtml(message) + '\n';
+		collect += messageToHtml(message, mainSource !== message.path) + '\n';
 	}
 	for (let extra of bundle.extras) {
 		collect += '<span class="extra">\n';
@@ -96,7 +100,7 @@ function bundleToHtml(bundle) {
 	//return bundle.map(messageToHtml).join('\n');;
 }
 
-function messageToHtml(message) {
+function messageToHtml(message, includeSource = false) {
 	const messageContext = message.context || '';
 	if (message.line !== message.endLine) {
 		message.end = messageContext.length;
@@ -113,8 +117,11 @@ function messageToHtml(message) {
 	const endLine = message.line !== message.endline ? `...${message.endline}` : ``;
 
 	const context = `${strToHtml(prefix)}<span class='theError'>${strToHtml(error)}</span>${strToHtml(postfix)}`;
+	const source = includeSource ? `<span class="alternative-source">&lt;-- ${message.path}</span>` : '';
+	const lineTitle = includeSource ? ` title="${message.path}"` : '';
 	return `<span class="message line-${line}">
-			<span class="context"><span class="line">${line}${endLine}:</span>${context}</span>
+			${source}
+			<span class="context"><span class="line" ${lineTitle}>${line}${endLine}:</span>${context}</span>
 			<span class="message-text"><span class="line"></span>${fullMessage}</span>
 		</span>`;
 }
