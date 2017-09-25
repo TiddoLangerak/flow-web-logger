@@ -107,9 +107,6 @@ function bundleToHtml(bundle) {
 
 function messageToHtml(message, includeSource = false) {
 	const messageContext = message.context || '';
-	if (message.line !== message.endLine) {
-		message.end = messageContext.length;
-	}
 	const loc = message.loc || {
 		start : { column : 0 },
 		end : { column : 0 }
